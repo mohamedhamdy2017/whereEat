@@ -4,14 +4,14 @@ import { task_register } from '../api'
 import { Button } from 'native-base'
 
 
-export default class HomeScreen extends Component {
+class HomeScreen extends Component {
     static navigationOptions={
         header: null
     }
 
     async onButtonPressed (){
         const result = await task_register()
-        this.props.navigation.navigate('Details',{result})
+        this.props.navigation.navigate('Details', {result})
         console.log(result)
     }
 
@@ -73,3 +73,5 @@ const styles = StyleSheet.create({
         borderRadius: 8
     }
 });
+
+export default HomeScreen

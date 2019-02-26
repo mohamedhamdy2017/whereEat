@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet} from 'react-native'
 import { Button } from 'native-base'
-import { task_register } from '../redux/actions'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { task_register } from '../api'
 import MapView, { Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 import { Icon } from 'react-native-elements';
 
@@ -21,31 +19,41 @@ class DetailsScreen extends Component {
     />
   })
 
+  state = {
+    lat:'',
+    lon:'',
+    name:'',
+    rate:'',
+    cat:''
+  }
+
   async onButtonPressed() {
     const result = await task_register()
-    if(result) {
-      return {
+      this.setState ({
         lat: parseFloat(result.lat),
         lon: parseFloat(result.lon),
         name: result.name,
         rate: result.rating,
         cat: result.cat
     },
-     () => {
-        this.mapView.fitToCoordinates([{
-          longitude: parseFloat(this.props.lon),
-          latitude: parseFloat(this.props.lat),
-      }], {
-          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
-          animated: true,
-      })
-      }
+    () => {
+      this.mapView.fitToCoordinates([{
+        longitude: parseFloat(this.state.lon),
+        latitude: parseFloat(this.state.lat),
+    }], {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+    })
+    }
+    
+    )
+    console.log(this.state)   
   }
-    console.log(this.props)
-  }
+  
 
   render() {
     const { result } = this.props.navigation.state.params;
+    console.log(result)
     return (
       <View style={styles.container}>
       
@@ -54,27 +62,27 @@ class DetailsScreen extends Component {
           provider={PROVIDER_GOOGLE}
           ref= {ref => this.mapView = ref}
           initialRegion={{
-            latitude: parseFloat(this.props.lat) || parseFloat(result.lat),
-            longitude: parseFloat(this.props.lon)|| parseFloat(result.lon),
+            latitude: parseFloat(this.state.lat) || parseFloat(result.lat),
+            longitude: parseFloat(this.state.lon)|| parseFloat(result.lon),
             latitudeDelta: 0.00 ,
             longitudeDelta: 0.00,
           }}
         >
         <MapView.Marker 
         coordinate ={{
-          latitude: parseFloat(this.props.lat) || parseFloat(result.lat), 
-          longitude: parseFloat(this.props.lon)|| parseFloat(result.lon)
+          latitude: parseFloat(this.state.lat) || parseFloat(result.lat), 
+          longitude: parseFloat(this.state.lon)|| parseFloat(result.lon)
           }}/>
         </MapView>
         <Callout style={styles.callout}>
           <View style={styles.textsContainerStyle}>
-            <Text style={styles.nameStyle}>{this.props.name || result.name}</Text>
+            <Text style={styles.nameStyle}>{this.state.name || result.name}</Text>
             <View style={styles.textsViewStyle}>
               <View style={{flexDirection:'row', marginRight: 30}}>
-                <Text style={styles.rateTextStyle}>{this.props.rate || result.rate}</Text>
+                <Text style={styles.rateTextStyle}>{this.state.rate || result.rate}</Text>
                 <Text style={styles.rateTextStyle}>-10</Text>
               </View>
-              <Text style={styles.textStyle}>{this.props.cat || result.cat}</Text>
+              <Text style={styles.textStyle}>{this.state.cat || result.cat}</Text>
             </View>
           </View>
 
@@ -148,15 +156,5 @@ const styles = StyleSheet.create({
 });
 
 
-const mapStateToProps = ({fetch}) => {
- const { lat, lon, name, rate, cat } = fetch
- return { lat, lon, name, rate, cat }
-}
 
-const mapDispatchToProps = dispatch => {
-  return bindActionCreators({
-      task_register
-  }, dispatch)
-}
-
-export default connect(mapStateToProps, mapDispatchToProps ) (DetailsScreen);
+export default DetailsScreen

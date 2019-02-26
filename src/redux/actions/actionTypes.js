@@ -1,3 +1,0 @@
-export const IS_FETCHING = 'IS_FETCHING'
-export const FETCHING_SUCCESS = 'IS_FETCHING'
-export const FETCHING_FAILED = 'IS_FETCHING'
