@@ -9,16 +9,6 @@ export default class HomeScreen extends Component {
         header: null
     }
 
-    componentDidMount() {
-      navigator.geolocation.getCurrentPosition(postion=>{
-           console.log(postion.coords.latitude)
-             
-            // postion.coords.longitude
-        })
-       // this.onButtonPressed()
-    }
-    
-
     async onButtonPressed (){
         const result = await task_register()
         this.props.navigation.navigate('Details',{result})
@@ -26,7 +16,6 @@ export default class HomeScreen extends Component {
     }
 
     
-
     render() {
         return (
             <ImageBackground
