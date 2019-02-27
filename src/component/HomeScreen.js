@@ -9,9 +9,28 @@ class HomeScreen extends Component {
         header: null
     }
 
+    state = {
+        long: '',
+        lati: ''
+    }
+
+    componentDidMount(){
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                console.log(position)
+              const longitude = position.coords.longitude
+              const latitude = position.coords.latitude
+              this.setState({ long: longitude, lati: latitude });
+            },
+            error => alert(error.message),
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        );
+    }
+
     async onButtonPressed (){
-        const result = await task_register()
-        this.props.navigation.navigate('Details', {result})
+        const { lati, long } = this.state
+        const result = await task_register(parseFloat(lati), parseFloat(long))
+        this.props.navigation.navigate('Details', {result, lati, long})
         console.log(result)
     }
 

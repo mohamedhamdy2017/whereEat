@@ -1,8 +1,9 @@
+
 const Parameters = {UID: '26.2716025' & '50.2017993'}
 
+export const task_register = async (lat, lon) => {
 
-export const task_register = async () => {
-   let url = 'https://wainnakel.com/api/v1/GenerateFS.php?uid=26.2716025,50.2017993&get_param=value'
+   let url = `https://wainnakel.com/api/v1/GenerateFS.php?uid=${lat},${lon}&get_param=value`
    const res = await fetch(url, {
        method: "POST",
        headers: {

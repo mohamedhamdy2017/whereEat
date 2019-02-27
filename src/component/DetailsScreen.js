@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet} from 'react-native'
+import { Text, View, StyleSheet, Dimensions} from 'react-native'
 import { Button } from 'native-base'
 import { task_register } from '../api'
 import MapView, { Callout, PROVIDER_GOOGLE } from 'react-native-maps'
@@ -19,7 +19,10 @@ class DetailsScreen extends Component {
     />
   })
 
+
   state = {
+    lati: '',
+    long: '',
     lat:'',
     lon:'',
     name:'',
@@ -27,19 +30,33 @@ class DetailsScreen extends Component {
     cat:''
   }
 
+ componentDidMount(){
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                console.log(position)
+              const longitude = position.coords.longitude
+              const latitude = position.coords.latitude
+              this.setState({ long: longitude, lati: latitude });
+            },
+            error => alert(error.message),
+            { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+        );
+    }
+
   async onButtonPressed() {
-    const result = await task_register()
+    const { lati, long } = this.state
+    const result = await task_register(parseFloat(lati), parseFloat(long))
       this.setState ({
-        lat: parseFloat(result.lat),
-        lon: parseFloat(result.lon),
+        lat: parseFloat(result.lat) || parseFloat(this.state.lati),
+        lon: parseFloat(result.lon)  || parseFloat(this.state.long),
         name: result.name,
         rate: result.rating,
         cat: result.cat
     },
     () => {
       this.mapView.fitToCoordinates([{
-        longitude: parseFloat(this.state.lon),
-        latitude: parseFloat(this.state.lat),
+        longitude: parseFloat(this.state.lon) || parseFloat(this.state.long),
+        latitude: parseFloat(this.state.lat) || parseFloat(this.state.lati),
     }], {
         edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
         animated: true,
@@ -52,8 +69,8 @@ class DetailsScreen extends Component {
   
 
   render() {
-    const { result } = this.props.navigation.state.params;
-    console.log(result)
+    const { result, lati, long} = this.props.navigation.state.params;
+    console.log(result,lati, long)
     return (
       <View style={styles.container}>
       
@@ -62,16 +79,16 @@ class DetailsScreen extends Component {
           provider={PROVIDER_GOOGLE}
           ref= {ref => this.mapView = ref}
           initialRegion={{
-            latitude: parseFloat(this.state.lat) || parseFloat(result.lat),
-            longitude: parseFloat(this.state.lon)|| parseFloat(result.lon),
-            latitudeDelta: 0.00 ,
-            longitudeDelta: 0.00,
+            latitude: parseFloat(this.state.lat) || parseFloat(result.lat) || parseFloat(this.state.lati) ,
+            longitude: parseFloat(this.state.lon)|| parseFloat(result.lon) || parseFloat(this.state.long) ,
+            latitudeDelta: 0.0070,
+            longitudeDelta: Dimensions.get("window").width/Dimensions.get("window").height * 0.0070 
           }}
         >
         <MapView.Marker 
         coordinate ={{
-          latitude: parseFloat(this.state.lat) || parseFloat(result.lat), 
-          longitude: parseFloat(this.state.lon)|| parseFloat(result.lon)
+          latitude: parseFloat(this.state.lat) || parseFloat(result.lat) || parseFloat(this.state.lati), 
+          longitude: parseFloat(this.state.lon)|| parseFloat(result.lon) || parseFloat(this.state.long)
           }}/>
         </MapView>
         <Callout style={styles.callout}>
