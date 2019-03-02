@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet, Dimensions} from 'react-native'
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Linking} from 'react-native'
 import { Button } from 'native-base'
 import { task_register } from '../api'
 import MapView, { Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 import { Icon } from 'react-native-elements';
+import openMap from 'react-native-open-maps';
+import getDirections from 'react-native-google-maps-directions'
+
 
 
 
@@ -66,11 +69,30 @@ class DetailsScreen extends Component {
     )
     console.log(this.state)   
   }
+
+    handleGetDirections = async () => {
+    const result = await task_register(parseFloat(lati), parseFloat(long))
+    const { lati, long } = this.state
+    const data = {
+      destination: {
+        latitude: parseFloat(result.lat) || parseFloat(this.state.lat) ||  parseFloat(this.state.lati),
+        longitude: parseFloat(result.lon) ||  parseFloat(this.state.lon)|| parseFloat(this.state.long)
+      },
+      params: [
+        {
+          key: "travelmode",
+          value: "driving"     
+        },
+      ]
+    }
+ 
+    getDirections(data)
+  }
   
 
   render() {
     const { result, lati, long} = this.props.navigation.state.params;
-    console.log(result,lati, long)
+    console.log( result, lati, long)
     return (
       <View style={styles.container}>
       
@@ -104,6 +126,11 @@ class DetailsScreen extends Component {
           </View>
 
         </Callout>
+        <View style={styles.DIRView}>
+        <TouchableOpacity  style={{ marginBottom: 55 }}>
+              <Icon name="directions" size={64} color='rgba(10,78,95,0.6)'/>  
+          </TouchableOpacity>
+        </View>
         <View style={styles.buttonView}>
             <Button bordered light
               style={styles.button}
@@ -169,6 +196,13 @@ const styles = StyleSheet.create({
     flex: 1,
     color: '#fff',
     fontSize: 20
+  },
+  DIRView:{
+    flex:1, 
+    position:'absolute',
+    alignSelf:'center',
+    marginVertical:420,
+
   }
 });
 
