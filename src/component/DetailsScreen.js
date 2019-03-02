@@ -127,7 +127,9 @@ class DetailsScreen extends Component {
 
         </Callout>
         <View style={styles.DIRView}>
-        <TouchableOpacity  style={{ marginBottom: 55 }}>
+        <TouchableOpacity  style={{ marginBottom: 55 }}
+          onPress={this.handleGetDirections}
+        >
               <Icon name="directions" size={64} color='rgba(10,78,95,0.6)'/>  
           </TouchableOpacity>
         </View>
